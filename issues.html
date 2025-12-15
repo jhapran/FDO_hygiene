@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hygiene Issues - FDO Monitoring</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-shield-check"></i>
+                <span>FDO Hygiene Monitor</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-dashboard"></i> Dashboard
+                </a>
+                <a href="projects.html" class="nav-link">
+                    <i class="fas fa-project-diagram"></i> Projects
+                </a>
+                <a href="issues.html" class="nav-link active">
+                    <i class="fas fa-exclamation-triangle"></i> Issues
+                </a>
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationCount">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-content">
+                <h1>Hygiene Issues Tracking</h1>
+                <p class="header-subtitle">Monitor and resolve data hygiene issues across all projects</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="filterIssues('all')">
+                    <i class="fas fa-list"></i> All Issues
+                </button>
+                <button class="btn btn-secondary" onclick="filterIssues('open')">
+                    <i class="fas fa-exclamation-circle"></i> Open Only
+                </button>
+            </div>
+        </header>
+
+        <!-- Filters -->
+        <div class="panel">
+            <div class="panel-content" style="padding: 1rem;">
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <input type="text" id="searchInput" placeholder="Search issues..." 
+                               style="width: 100%; padding: 0.625rem 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem;"
+                               onkeyup="searchIssues()">
+                    </div>
+                    
+                    <select id="severityFilter" onchange="applyFilters()" 
+                            style="padding: 0.625rem 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                        <option value="">All Severities</option>
+                        <option value="Critical">Critical</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                    
+                    <select id="statusFilter" onchange="applyFilters()" 
+                            style="padding: 0.625rem 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                        <option value="">All Statuses</option>
+                        <option value="Open">Open</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Resolved">Resolved</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+                    
+                    <select id="typeFilter" onchange="applyFilters()" 
+                            style="padding: 0.625rem 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                        <option value="">All Types</option>
+                        <option value="Missing Data">Missing Data</option>
+                        <option value="Outdated Status">Outdated Status</option>
+                        <option value="Incomplete Nomination">Incomplete Nomination</option>
+                        <option value="Data Inconsistency">Data Inconsistency</option>
+                        <option value="Compliance Gap">Compliance Gap</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Issues Table -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-list"></i> All Hygiene Issues (<span id="issueCount">0</span>)</h2>
+                <button class="btn btn-primary" onclick="openCreateIssueModal()">
+                    <i class="fas fa-plus"></i> Create Issue
+                </button>
+            </div>
+            <div class="panel-content" style="padding: 0;">
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Status</th>
+                                <th>Severity</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Project</th>
+                                <th>Assigned To</th>
+                                <th>Detected</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="issuesTableBody">
+                            <tr>
+                                <td colspan="9" class="loading">Loading issues...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Issue Details Modal -->
+    <div id="issueModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Issue Details</h2>
+                <button class="modal-close" onclick="closeIssueModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="issueModalBody">
+                <!-- Content populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Issue Modal -->
+    <div id="createIssueModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Issue</h2>
+                <button class="modal-close" onclick="closeCreateIssueModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="createIssueForm" onsubmit="createIssue(event)">
+                    <div style="display: grid; gap: 1rem;">
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Project</label>
+                            <select id="projectSelect" required 
+                                    style="width: 100%; padding: 0.625rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                                <option value="">Select a project</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Issue Type</label>
+                            <select id="issueType" required 
+                                    style="width: 100%; padding: 0.625rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                                <option value="Missing Data">Missing Data</option>
+                                <option value="Outdated Status">Outdated Status</option>
+                                <option value="Incomplete Nomination">Incomplete Nomination</option>
+                                <option value="Data Inconsistency">Data Inconsistency</option>
+                                <option value="Compliance Gap">Compliance Gap</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Severity</label>
+                            <select id="issueSeverity" required 
+                                    style="width: 100%; padding: 0.625rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                                <option value="Critical">Critical</option>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Description</label>
+                            <textarea id="issueDescription" required rows="4"
+                                      style="width: 100%; padding: 0.625rem; border: 1px solid var(--border-color); border-radius: 0.5rem; resize: vertical;"
+                                      placeholder="Describe the hygiene issue..."></textarea>
+                        </div>
+                        
+                        <div>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Assign To</label>
+                            <input type="text" id="issueAssignee" required 
+                                   style="width: 100%; padding: 0.625rem; border: 1px solid var(--border-color); border-radius: 0.5rem;"
+                                   placeholder="Project Manager name">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-plus"></i> Create Issue
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/mock-data.js"></script>
+    <script src="js/issues.js"></script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FDO Hygiene Monitoring Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-shield-check"></i>
+                <span>FDO Hygiene Monitor</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link active">
+                    <i class="fas fa-dashboard"></i> Dashboard
+                </a>
+                <a href="projects.html" class="nav-link">
+                    <i class="fas fa-project-diagram"></i> Projects
+                </a>
+                <a href="issues.html" class="nav-link">
+                    <i class="fas fa-exclamation-triangle"></i> Issues
+                </a>
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationCount">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-content">
+                <h1>Daily Hygiene Monitoring Dashboard</h1>
+                <p class="header-subtitle">December 14, 2025 | Real-time Delivery Governance</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="btn btn-primary" onclick="generateReport()">
+                    <i class="fas fa-file-export"></i> Generate Report
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card stat-card-critical">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="criticalIssues">0</div>
+                    <div class="stat-label">Critical Issues</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-card-warning">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="pendingIssues">0</div>
+                    <div class="stat-label">Pending Resolution</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-card-success">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="resolvedToday">0</div>
+                    <div class="stat-label">Resolved Today</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-card-info">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value" id="avgHygieneScore">0%</div>
+                    <div class="stat-label">Avg Hygiene Score</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+            <!-- Notifications Panel -->
+            <div class="panel notifications-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-bell"></i> Active Notifications</h2>
+                    <button class="btn-text" onclick="markAllAsRead()">Mark all as read</button>
+                </div>
+                <div class="panel-content">
+                    <div id="notificationsList" class="notifications-list">
+                        <div class="loading">Loading notifications...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hygiene Score Chart -->
+            <div class="panel chart-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-chart-bar"></i> Project Hygiene Scores</h2>
+                </div>
+                <div class="panel-content">
+                    <canvas id="hygieneChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Issues -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-list"></i> Recent Hygiene Issues</h2>
+                <a href="issues.html" class="btn-text">View all issues</a>
+            </div>
+            <div class="panel-content">
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Severity</th>
+                                <th>Issue Type</th>
+                                <th>Description</th>
+                                <th>Assigned To</th>
+                                <th>Detected</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="issuesTableBody">
+                            <tr>
+                                <td colspan="7" class="loading">Loading issues...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div id="notificationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Notification Details</h2>
+                <button class="modal-close" onclick="closeNotificationModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="notificationModalBody">
+                <!-- Content populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/mock-data.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
